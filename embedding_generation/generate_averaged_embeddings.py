@@ -19,7 +19,7 @@ from model_utils import *
 
 # define constants
 DATA_FOLDER = "../data/"
-SAVING_FOLDER = "./data/embeddings/"
+SAVING_FOLDER = "../data/embeddings/"
 
 # load bert-model
 model_name = 'NbAiLab/nb-bert-base'
@@ -67,7 +67,7 @@ def save_word_embeddings(word_embedding_dict):
 
 word_embedding_dict = {}
 
-for j, chunk in enumerate(text_chunks[:30000]): 
+for j, chunk in enumerate(text_chunks[:300]): 
     chunk = chunk.strip()
     word_array = [token.text for token in nlp(chunk)]
     token_mapping, token_embeddings = tokens_to_embeddings(word_array, tokenizer, bert_model)
