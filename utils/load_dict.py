@@ -56,5 +56,45 @@ def load_phonetic_frame(input_file):
     # remove rows without lemma
     phonetic_lemmas = np.array(phonetics_df.lemma)
     phonetics_df = phonetics_df.drop(np.where(phonetic_lemmas=='')[0])
+    
+    
+    # Additional formatting to make the phonetic encoding work with 
+    # Levensthein distance, mainly double chars to single char
+    
+    # find all unique characters in phonetic alphabeth
+    phonetics_list = list(phonetics_df['phonetic_stressless'])
+    phonetic_chars = []
+    for phonetic in phonetics_list: 
+        phonetic_chars += phonetic.split()
+    phonetic_chars = list(set(phonetic_chars))
+    
+    # define random characters not in phonestics to translate for phonetic single
+    random_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&'
+    extra_set = []
+    for char in random_chars: 
+        if (not char in phonetic_chars):
+            extra_set.append(char)
+            
+    # find all the double phonetic characters
+    double_phonetic_chars = []
+    for phonetic_char in phonetic_chars: 
+        if (len(phonetic_char)>1): 
+            double_phonetic_chars.append(phonetic_char)
+    
+    # define conversion from double char to random char not used as encoding before
+    double2single = {}
+    for i in range(len(double_phonetic_chars)): 
+        double2single.update({double_phonetic_chars[i]: extra_set[i]})
+    
+    def phonetic_transformation(phonetic): 
+        phonetic_splitted = phonetic.split()
+        for i, phonetic_char in enumerate(phonetic_splitted): 
+            if (phonetic_char in double2single): 
+                phonetic_splitted[i] = double2single[phonetic_char]
+        return "".join(phonetic_splitted)
+    
+    # create new list of phonetic list with substituted characters and removed spaces
+    phonetics_df['lev_adopted_encoding'] = [phonetic_transformation(phonetic) for phonetic in phonetics_list]
+    
 
     return phonetics_df
