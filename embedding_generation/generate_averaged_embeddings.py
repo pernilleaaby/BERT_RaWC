@@ -79,6 +79,9 @@ for j, chunk in enumerate(text_chunks):
             # obtain embeddings for word
             token_ids = np.where(token_mapping == i)[0]
             word_embedding = np.mean(token_embeddings[token_ids], axis=0)
+            # make sure word embedding does not have nan, for some reason it happens sometimes
+            if (np.isnan(np.sum(word_embedding))): 
+                continue
             # average in static word-embeddings
             word_embedding_dict = insert_embedding_in_dict(word, word_embedding, word_embedding_dict)
 

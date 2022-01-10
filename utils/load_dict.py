@@ -53,10 +53,6 @@ def load_phonetic_frame(input_file):
     phonetics_df['phonetic_stressless'] = [filter_stress(phonetic) for phonetic in phonetics_df[1]] 
     phonetics_df['lemma'] = [filter_lemma(lemma_long) for lemma_long in phonetics_df[13]]
     
-    # remove rows without lemma
-    phonetic_lemmas = np.array(phonetics_df.lemma)
-    phonetics_df = phonetics_df.drop(np.where(phonetic_lemmas=='')[0])
-    
     
     # Additional formatting to make the phonetic encoding work with 
     # Levensthein distance, mainly double chars to single char
