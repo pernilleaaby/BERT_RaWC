@@ -169,7 +169,7 @@ for train_idx in range(len(norne['train'])):
     confusion = confuse_tokens(train_row['tokens'])
     if (not confusion): # did not find any words to substitute
         continue
-    top_words, tops_sims = find_knn_words_array(confusion[0], confusion[1][2], tokenizer, bert_model, top = 3)
+    top_words, top_sims = find_knn_words_array(confusion[0], confusion[1][2], tokenizer, bert_model, top = 3)
     confusion_result = (confusion[0], confusion[1], top_words, top_sims)
     confusion_results.append(confusion_result)
     if (top_words[0]==confusion[1][0]): # most similar word matches original
