@@ -190,7 +190,7 @@ m_itself = 0
 m_other = 0
 confusion_results = []
 for train_idx in range(len(norne['train'])): 
-    train_row = norwegian_ner['train'][train_idx]
+    train_row = norne['train'][train_idx]
     relevant_ids = find_relevant_word_ids(train_row['tokens'])
     if (not relevant_ids): # did not find any words to substitute
         continue
