@@ -30,7 +30,7 @@ phonetics_df = load_phonetic_frame(DATASET_FOLDER+"20191016_nlb_trans/nlb_nob_20
 
 # load our top 50 000 vocabulary from news corpus
 with open(SAVING_FOLDER+"top50000_news_vocabulary.json", "r") as f: 
-    filtered_words_occ = json.load(f)
+    filtered_words_occ = json.load(f)   
 # extract only the words 
 filtered_word_set = set([word_tuple[0] for word_tuple in filtered_words_occ])
 
