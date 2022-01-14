@@ -11,6 +11,10 @@ import json
 
 import torch
 from transformers import BertTokenizerFast, BertModel
+from torch.nn import CosineSimilarity
+
+# define cosine function 
+cos = CosineSimilarity(dim=1)
 
 
 def load_bert(model, is_cuda = True):
@@ -106,3 +110,67 @@ def insert_embedding_in_dict(word_phrase, word_embedding, word_embedding_dict, m
         word_embedding_dict.update({word_phrase: (word_embedding, 1)})
         
     return word_embedding_dict
+
+
+###################################
+# Processing embedding dictionary
+###################################
+
+def find_word_embedding_idx(word_idx, word_array, tokenizer, bert_model, LAYER = 12): 
+    """Obtain and extract the word embeding of only the word-idx place
+    in the word array. Layer is set to decide with hidden state to use.
+
+    Parameters
+    ----------
+    word_idx : int
+        index of relevant word in the word-array
+    word_array: array
+        array of words after word-tokenizing string
+    LAYER: int
+        integer to decide which layer to extract hidden state from
+
+    Returns
+    -------
+    array
+        vector corresponding to the embedding of the relevant word 
+    """
+    token_mapping, token_embeddings = tokens_to_embeddings(word_array, tokenizer, bert_model)
+    
+    # obtain embeddings for word
+    token_ids = np.where(token_mapping == word_idx)[0]
+    word_embedding = np.mean(token_embeddings[token_ids], axis=0)[LAYER]
+    
+    return word_embedding
+
+
+
+def get_most_similar_from_vector(word_vector, word_tensors, dict_words, is_cuda = False, top = 10):
+    """Find the most similar words to the input word-vector
+
+    Parameters
+    ----------
+    word_vector : array
+        embedding of a word
+    word_tensor: tensor
+        dictionary of embeddings
+    dict_words: array
+        array of words corresponding to the dictionary of embeddings
+
+    Returns
+    -------
+    array
+        top most similar words
+    array
+        the similarity score to the top words
+    """
+    # format word vector
+    word_vector = word_vector.unsqueeze(0)
+    # fetch cosine similarities
+    if (is_cuda): 
+        cos_sims = cos(word_vector, word_tensors).cpu().detach().numpy()
+    else: 
+        cos_sims = cos(word_vector, word_tensors).detach().numpy()
+    sorted_indecies = np.argsort(cos_sims)
+    
+    return dict_words[sorted_indecies[-top:]][::-1], cos_sims[sorted_indecies][-top:][::-1]
+
