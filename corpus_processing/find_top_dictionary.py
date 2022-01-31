@@ -16,6 +16,9 @@ import pickle
 import json
 from datetime import datetime
 import spacy
+import spacy_fastlang
+
+import nltk
 
 import sys
 sys.path.append("../utils/")
@@ -28,7 +31,15 @@ TOP_COMMON = 50000
 
 # load spacy tokenizer
 nlp = spacy.load("nb_core_news_sm", disable = ['ner', 'tagger', 'parser', 'lemmatizer', 'tok2vec', 'morphologizer', 'attribute_ruler'])
+nlp.add_pipe('language_detector')
 
+def article2text_chunks(article): 
+    text_chunks = []
+    doc = nltk.sent_tokenize(article)
+    for i in range(0, len(doc), 2): 
+        text_chunks.append(" ".join(doc[i:i+2]))
+    
+    return text_chunks
 
 # count the words in the corpus in lowercase
 cnt_words = Counter()
@@ -36,7 +47,20 @@ word_array = []
 with open(DATA_FOLDER+"cleaned_newspapers_online_nob.txt", "r", encoding="UTF-8") as f_in: 
     articles = []
     for i, article in enumerate(f_in): 
-        articles.append(article)
+        
+        sents = nltk.sent_tokenize(article)     
+        for sent in sents: 
+            doc = nlp(sent)
+            if (doc._.language == 'en'): # we want to filter out english text, translation properties
+                continue
+            word_array += [token.text.lower() for token in doc]
+            
+        if (i % 10000 == 0):
+            cnt_words += Counter(word_array)
+            word_array = []
+            print(i, end=" ")
+
+        """articles.append(article)
          
         if (i % 10000 == 0): # process
             docs = nlp.tokenizer.pipe(articles)
@@ -48,8 +72,7 @@ with open(DATA_FOLDER+"cleaned_newspapers_online_nob.txt", "r", encoding="UTF-8"
             # add object to counter
             cnt_words += Counter(word_array)
             word_array = []
-            articles = []
-            
+            articles = []"""   
 
 ## Filter out words not in the norwegian dictionary
 from load_dict import * 
@@ -65,5 +88,5 @@ for word_tuple in cnt_words.most_common():
 filtered_words_occ = filtered_words_occ[:TOP_COMMON]
 
 # save word vocabulary
-with open(SAVING_FOLDER+"top"+str(TOP_COMMON)+"_news_vocabulary.json", "w") as f: 
+with open(SAVING_FOLDER+"top"+str(TOP_COMMON)+"_news_vocabulary_english_filtered.json", "w") as f: 
     json.dump(filtered_words_occ, f)

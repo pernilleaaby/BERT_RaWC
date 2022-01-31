@@ -144,6 +144,7 @@ def find_word_embedding_idx(word_idx, word_array, tokenizer, bert_model, LAYER =
 
 
 
+
 def get_most_similar_from_vector(word_vector, word_tensors, dict_words, is_cuda = False, top = 10):
     """Find the most similar words to the input word-vector
 
@@ -173,4 +174,7 @@ def get_most_similar_from_vector(word_vector, word_tensors, dict_words, is_cuda 
     sorted_indecies = np.argsort(cos_sims)
     
     return dict_words[sorted_indecies[-top:]][::-1], cos_sims[sorted_indecies][-top:][::-1]
+
+
+
 
