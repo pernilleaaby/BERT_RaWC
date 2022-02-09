@@ -39,7 +39,15 @@ relevant_words = [word for word in en2no_dict.keys()]
 
 ## Load brown corpus
 brown_paras = brown.paras()
-brown_sents = [sent for para in brown_paras for sent in para]
+# make set of two and two sentences
+brown_sents = []
+for para in brown_paras: 
+    for i in range(len(para)): 
+        if (i % 2 == 0): 
+            brown_sents.append(para[i])
+        else: 
+            brown_sents[-1] += para[i]
+#brown_sents = [sent for para in brown_paras for sent in para]
 
 print("Number  of text chunks", len(brown_sents), flush=True)
 

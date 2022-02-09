@@ -101,3 +101,39 @@ word_idx = word_array.index(word)
 print(sent, word)
 print("Closest words: ")
 print(find_knn_words_array(word_array, word_idx, tokenizer, bert_model, lang_ad = False, top = 3))
+
+# English sentence with "make"
+sent = "Should we be focusing on replicating them – or trying to make new, tasty alternatives ? "
+word = "make"
+word_array = sent.split()
+word_idx = word_array.index(word)
+print(sent, word)
+print("Closest words: ")
+print(find_knn_words_array(word_array, word_idx, tokenizer, bert_model, lang_ad = True, top = 3))
+
+# Norwegian sentence with "do"
+sent = "Blant noen dyr setter belønningssystemet i gang, når dyrene finner sammen med en make . "
+word = "make"
+word_array = sent.split()
+word_idx = word_array.index(word)
+print(sent, word)
+print("Closest words: ")
+print(find_knn_words_array(word_array, word_idx, tokenizer, bert_model, lang_ad = False, top = 3))
+
+# English sentence with "love"
+sent = "Do you love me ? "
+word = "love"
+word_array = sent.split()
+word_idx = word_array.index(word)
+print(sent, word)
+print("Closest words: ")
+print(find_knn_words_array(word_array, word_idx, tokenizer, bert_model, lang_ad = True, top = 3))
+
+# Norwegian sentence with "love"
+sent = "Kan du love meg at vi ikke behøver å vente tre timer i kø ? "
+word = "love"
+word_array = sent.split()
+word_idx = word_array.index(word)
+print(sent, word)
+print("Closest words: ")
+print(find_knn_words_array(word_array, word_idx, tokenizer, bert_model, lang_ad = False, top = 3))

@@ -21,9 +21,12 @@ from model_utils import *
 DATA_FOLDER = "../data/"
 SAVING_FOLDER = "../data/embeddings/"
 
+MODEL_NAME = 'bert-base-multilingual-cased'#'NbAiLab/nb-bert-base'
+WORD_FILE = "word_to_embedding_mBERT.npy"
+EMBEDDING_FILE = "average_embeddings_mBERT.npy"
+
 # load bert-model
-model_name = 'NbAiLab/nb-bert-base'
-tokenizer, bert_model = load_bert(model_name, is_cuda = True)
+tokenizer, bert_model = load_bert(MODEL_NAME, is_cuda = True)
 
 # load tokenizer
 nlp = spacy.load("nb_core_news_sm", disable = ['ner', 'tagger', 'parser', 'lemmatizer', 'tok2vec', 'morphologizer', 'attribute_ruler'])
@@ -57,9 +60,9 @@ def save_word_embeddings(word_embedding_dict):
     fullform_words = list(word_embedding_dict.keys())
     word_tensors = [word_embedding_dict[key][0] for key in fullform_words]
     
-    with open(SAVING_FOLDER+"word_to_embedding.npy", "wb") as f: 
+    with open(SAVING_FOLDER+WORD_FILE, "wb") as f: 
         np.save(f, np.array(fullform_words, dtype=object))
-    with open(SAVING_FOLDER+"average_embeddings.npy", "wb") as f: 
+    with open(SAVING_FOLDER+EMBEDDING_FILE, "wb") as f: 
         np.save(f, np.array(word_tensors, dtype=np.float32))
         
     print("Embeddings saved", flush=True)
