@@ -71,7 +71,7 @@ else:
 tokenizer, bert_model = load_bert(model_name, is_cuda = True)
 
 # load parallel corpus Norwegian English
-with open("D:/english/riksrevisjonen.no.en-nb.tmx", 'rb') as fin:
+with open(SAVING_FOLDER+"riksrevisjonen.no.en-nb.tmx", 'rb') as fin:
         tmx_file = tmxfile(fin, 'no', 'en')
 parallel_data = []
 for node in tmx_file.unit_iter():
