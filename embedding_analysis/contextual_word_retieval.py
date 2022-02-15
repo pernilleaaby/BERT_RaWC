@@ -122,9 +122,9 @@ def language_adjust(embeddings, layer, from_language = 'en'):
     en_mean_vector = torch.mean(word_tensors_en[:, layer, :], 0).detach().numpy()
     
     if (from_language == 'en'): 
-        adjusted_embeddings = [embedding-ALPHA*(en_mean_vector+no_mean_vector) for embedding in embeddings]
+        adjusted_embeddings = [embedding+ALPHA*(-en_mean_vector+no_mean_vector) for embedding in embeddings]
     else: # assume from norwegian
-        adjusted_embeddings = [embedding-ALPHA*(no_mean_vector+en_mean_vector) for embedding in embeddings]
+        adjusted_embeddings = [embedding+ALPHA*(-no_mean_vector+en_mean_vector) for embedding in embeddings]
         
     return adjusted_embeddings
 
@@ -199,7 +199,7 @@ def match_context_embeddings(en_embeddings_l, no_embeddings_l):
             
     return corrects
 
-for layer in range(6, 13): 
+for layer in range(13): 
     en_embeddings_l = np.array(en_embeddings)[:, layer, :]
     no_embeddings_l = np.array(no_embeddings)[:, layer, :]
     
