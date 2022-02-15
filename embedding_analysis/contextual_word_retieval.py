@@ -36,18 +36,19 @@ DATASET_FOLDER = "D:/datasets/"
 SAVING_FOLDER = "../data/"
 
 mBERT = False
+ALPHA = 1.5
 if (mBERT): 
     WORD_FILE_NO = "../data/embeddings/word_to_embedding_mBERT.npy"
     EMBEDDING_FILE_NO = "../data/embeddings/average_embeddings_mBERT.npy"
     WORD_FILE_EN = "../data/embeddings/word_to_embedding_en_mBERT.npy"
     EMBEDDING_FILE_EN = "../data/embeddings/average_embeddings_en_mBERT.npy"
-    CONTEXT_RESULT_FILE = "results_mt_context_en2no_mBERT.json"
+    CONTEXT_RESULT_FILE = "results_mt_context_en2no_mBERT_"+str(ALPHA)+".json"
 else: 
     WORD_FILE_NO = "../data/embeddings/word_to_embedding.npy"
     EMBEDDING_FILE_NO = "../data/embeddings/average_embeddings.npy"
     WORD_FILE_EN = "../data/embeddings/word_to_embedding_en.npy"
     EMBEDDING_FILE_EN = "../data/embeddings/average_embeddings_en.npy"
-    CONTEXT_RESULT_FILE = "results_mt_context_en2no.json"
+    CONTEXT_RESULT_FILE = "results_mt_context_en2no_"+str(ALPHA)+".json"
     
 # choose random sentence pairs
 SAMPLE_SIZE = 5000
@@ -121,9 +122,9 @@ def language_adjust(embeddings, layer, from_language = 'en'):
     en_mean_vector = torch.mean(word_tensors_en[:, layer, :], 0).detach().numpy()
     
     if (from_language == 'en'): 
-        adjusted_embeddings = [embedding-en_mean_vector+no_mean_vector for embedding in embeddings]
+        adjusted_embeddings = [embedding-ALPHA*(en_mean_vector+no_mean_vector) for embedding in embeddings]
     else: # assume from norwegian
-        adjusted_embeddings = [embedding-no_mean_vector+en_mean_vector for embedding in embeddings]
+        adjusted_embeddings = [embedding-ALPHA*(no_mean_vector+en_mean_vector) for embedding in embeddings]
         
     return adjusted_embeddings
 
@@ -198,7 +199,7 @@ def match_context_embeddings(en_embeddings_l, no_embeddings_l):
             
     return corrects
 
-for layer in range(13): 
+for layer in range(6, 13): 
     en_embeddings_l = np.array(en_embeddings)[:, layer, :]
     no_embeddings_l = np.array(no_embeddings)[:, layer, :]
     
@@ -208,7 +209,7 @@ for layer in range(13):
     # run with adjusting for language
     en_embeddings_l_ad = language_adjust(en_embeddings_l, layer, from_language = 'en')
     
-    corrects_adj = corrects = match_context_embeddings(en_embeddings_l_ad, no_embeddings_l)
+    corrects_adj = match_context_embeddings(en_embeddings_l_ad, no_embeddings_l)
     results.append((corrects/en_embeddings_l.shape[0], corrects_adj/en_embeddings_l.shape[0]))
     
     print(layer)
