@@ -35,20 +35,22 @@ from translate.storage.tmx import tmxfile
 DATASET_FOLDER = "D:/datasets/"
 SAVING_FOLDER = "../data/"
 
-mBERT = False
-ALPHA = 1.5
+mBERT = True
+ALPHA = 1
 if (mBERT): 
     WORD_FILE_NO = "../data/embeddings/word_to_embedding_mBERT.npy"
     EMBEDDING_FILE_NO = "../data/embeddings/average_embeddings_mBERT.npy"
     WORD_FILE_EN = "../data/embeddings/word_to_embedding_en_mBERT.npy"
     EMBEDDING_FILE_EN = "../data/embeddings/average_embeddings_en_mBERT.npy"
     CONTEXT_RESULT_FILE = "results_mt_context_en2no_mBERT_"+str(ALPHA)+".json"
+    NON_CONTEXT_RESULT_FILE = "results_mt_non_context_en2no_mBERT_"+str(ALPHA)+".json"
 else: 
     WORD_FILE_NO = "../data/embeddings/word_to_embedding.npy"
     EMBEDDING_FILE_NO = "../data/embeddings/average_embeddings.npy"
     WORD_FILE_EN = "../data/embeddings/word_to_embedding_en.npy"
     EMBEDDING_FILE_EN = "../data/embeddings/average_embeddings_en.npy"
     CONTEXT_RESULT_FILE = "results_mt_context_en2no_"+str(ALPHA)+".json"
+    NON_CONTEXT_RESULT_FILE = "results_mt_non_context_en2no_"+str(ALPHA)+".json"
     
 # choose random sentence pairs
 SAMPLE_SIZE = 5000
@@ -220,4 +222,43 @@ for layer in range(13):
 with open(SAVING_FOLDER+CONTEXT_RESULT_FILE, "w") as f: 
     json.dump(results, f)
     
+    
+    
+    
+## Create non-contextual experiment, only using unique word-pairs
+# find relevant indecies
+non_contextual_indecies = []
+chosen_word_pairs = set()
+i = 0
+for word_pair in zip(english_words_from_pairs, norwegian_words_from_pairs): 
+    if (word_pair not in chosen_word_pairs): 
+        non_contextual_indecies.append(i)
+        chosen_word_pairs.add(word_pair)
+    i += 1
+non_contextual_indecies = np.array(non_contextual_indecies)
+print("We have this many unique word pairs: ", len(non_contextual_indecies))
+
+# test all layers
+results_non = []
+for layer in range(13): 
+    en_embeddings_l = np.array(en_embeddings)[non_contextual_indecies, layer, :]
+    no_embeddings_l = np.array(no_embeddings)[non_contextual_indecies, layer, :]
+    
+    # run without adjusting for language
+    corrects = match_context_embeddings(en_embeddings_l, no_embeddings_l)
+    
+    # run with adjusting for language
+    en_embeddings_l_ad = language_adjust(en_embeddings_l, layer, from_language = 'en')
+    
+    corrects_adj = match_context_embeddings(en_embeddings_l_ad, no_embeddings_l)
+    results_non.append((corrects/en_embeddings_l.shape[0], corrects_adj/en_embeddings_l.shape[0]))
+    
+    print(layer)
+    print((corrects/en_embeddings_l.shape[0], corrects_adj/en_embeddings_l.shape[0]))
+
+
+
+# save mt results
+with open(SAVING_FOLDER+NON_CONTEXT_RESULT_FILE, "w") as f: 
+    json.dump(results_non, f) 
     
