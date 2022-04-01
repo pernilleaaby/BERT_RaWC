@@ -5,6 +5,9 @@ Created on Sun Mar  6 16:34:31 2022
 @author: perni
 """
 
+## Create a dictionary that maps english words to all its norwegian translations 
+# from the MUSE benchmark
+
 import re
 import json 
 
