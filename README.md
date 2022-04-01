@@ -26,6 +26,8 @@ The script tests a few qualitative examples for word retrieval from contextual e
 The script takes a set of 5 words, in both English and Norwegian, and finds the word pairs in a small sample of paralell sentences. This way we can visually show how the words relate in a scatter plot. 
 ### embedding_analysis/contextual_word_retrieval.py
 The script evaluates contextual word retrieval from English to Norwegian with parallel sentences and aligned word pairs. 
+### embedding_analysis/plot_contextual_word_retrieval.ipynb
+The script plots the results from the contextual word retrieval. 
 
 ### embedding_analysis/language_detection.ipynb
 The script detects the language of each word in the static word embedding vocabularies for both English and Norwegian. 
@@ -40,6 +42,8 @@ The script generates wrong context by switching out a word with one of the confu
 
 ### embedding_analysis/static_dynamic_comparison.py
 The script evaluates the number of matches from the contextual word embeddings from the NorNe text passages into the static word embedding vocabulary. 
+### embedding_analysis/plot_static_dynamic_results.ipynb
+The script plots the results from the real versus wrong context, highest match experiment. 
 
 ### real_wrong_iso_comparison.ipynb
 The script compares a word collection from real, wrong and isolated context through visual plots and distributions. 
